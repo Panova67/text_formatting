@@ -34,7 +34,7 @@ string getInputData() {
 
 //Проверить содержимое строки на корректность
 int checkingStringForCorrectness(string inputData) {
-    int error = 1;
+    int error = 1; 
     // Поддерживаемые символы: кириллица, латиница, знаки препинания, арифметические знаки, цифры
     string correctСharacters = { "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯбвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz .,!?…«»()-:;'\"+-*=/><%[]{}≈№1234567890" };
     //а
@@ -54,20 +54,27 @@ int checkingStringForCorrectness(string inputData) {
     return error;
 }
 
-/*
 //Найти позиции пробелов и знаков препинания
-int  findPositionOfSeparatingCharacters(string inputData) {
+int  *findPositionOfSeparatingCharacters(string inputData, int& size) {
+    int arrayOfSeparatingCharacters[MaxSize]; //массив позиций пробелов или знаков препинания
+    char search[] = { ".,!?…»)-:; " };
+    size = 0;
+
     //Для каждого символа строки
+    for (int i = 0; inputData[i] != '\0'; i++)
     {
         //Если текущий символ — знак препинания или пробел, или последний символ строки
+        if (strchr(search, inputData[i]) != NULL || i == inputData.length() - 1)
         {
             //Добавить в массив индекс текущего символа
+            arrayOfSeparatingCharacters[size] = i;
+            size++;
         }
     }
 
     //Вернуть массив разделителей
     return arrayOfSeparatingCharacters;
-}*/
+}
 
 /*
 //Разделить строку с переносами
@@ -98,8 +105,11 @@ string stringProcessing(string inputData) {
     //if(!checkingStringForCorrectness(inputData)){ return 1;}
 
     //Находить позиции для разделения строки по группам...
+    int* arrayOfSeparatingCharacters = {}, size;
+    arrayOfSeparatingCharacters = findPositionOfSeparatingCharacters(inputData, size);
 
     //Разделить строку с переносами...
+    //inputData = stringBreak(inputData, *arrayOfSeparatingCharacters);
 
     //Вернуть перенесенные строки
     return inputData;
