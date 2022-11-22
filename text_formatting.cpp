@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 using namespace std;
+const int MaxSize = 2000;
 
 //Получить текст из входного файла
 string getInputData() {
@@ -31,12 +32,12 @@ string getInputData() {
     return inputData;
 }
 
-/*
 //Проверить содержимое строки на корректность
 int checkingStringForCorrectness(string inputData) {
+    int error = 1;
     // Поддерживаемые символы: кириллица, латиница, знаки препинания, арифметические знаки, цифры
-    string correctСharacters = { "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz .,!?…«»()-:;'\"+-*=/><%[]{}≈№1234567890" };
-
+    string correctСharacters = { "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯбвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz .,!?…«»()-:;'\"+-*=/><%[]{}≈№1234567890" };
+    //а
     //Для каждого символа строки
     for (int i = 0; inputData[i] != '\0'; i++)
     {
@@ -44,12 +45,14 @@ int checkingStringForCorrectness(string inputData) {
         //не является кириллицей, латиницей, цифрой, знаком препинания и арифметическим знаком
         if (correctСharacters.find(inputData[i]) == string::npos) {
             cout << "Ошибка: Некорректный символ " << inputData[i] << endl;
+            error = 0;
+            break;
         }
     }
 
     //Вернуть код без ошибки
-    return 0;
-}*/
+    return error;
+}
 
 /*
 //Найти позиции пробелов и знаков препинания
@@ -84,14 +87,15 @@ string stringBreak(string inputData, int arrayOfSeparatingCharacters) {
     return inputData;
 }*/
 
-
-/*
 //Расставить в строке переносы
 string stringProcessing(string inputData) {
     //Выдать ошибку, если размер строки не соответствует разрешенному диапазону
-
+    if (inputData.length() > MaxSize) {
+        cout << "Ошибка: Размер строки не соответствует разрешенному диапазону (2000)" << endl;
+    } 
+    
     //Выдать ошибку, если содержимое строки не корректно…
-
+    //if(!checkingStringForCorrectness(inputData)){ return 1;}
 
     //Находить позиции для разделения строки по группам...
 
@@ -99,7 +103,7 @@ string stringProcessing(string inputData) {
 
     //Вернуть перенесенные строки
     return inputData;
- }*/
+ }
 
 /*
 //Соединить перенесенные строки на массив строк по длине 15-20 символов
@@ -125,26 +129,29 @@ int writeOutputData(string outputData) {
 
 
 int main(const int argc, char** argv) {
+    setlocale(LC_ALL, "rus");
+
     string inputData, //данные от входного файла
         outputData; //текст для выходного файла
 
     //Получить текст из входного файла...
     inputData = getInputData();
-
+    
 //----------------------------    
     //Выдать ошибку, если входной файл не указан в аргументах командной строки
     //Выдать ошибку, если входной файл невозможно открыть
     
+    //Расставить в строке переносы...
+    inputData = stringProcessing(inputData);
+
     //Если есть ошибка
     //{
         //Распечатать её в консоль ошибок
         //Завершить работу программы
     //}
  //----------------------------
-    /*
-    //Расставить в строке переносы...
-    inputData = stringProcessing(inputData);
     
+    /*
     //Соединить перенесенные строки на массив строк по длине 15 - 20 символов...
     outputData = groupStrings(inputData);
     
