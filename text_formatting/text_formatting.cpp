@@ -127,47 +127,27 @@ string splitText() {
 
 
 //Расставить в строке переносы
-string stringProcessing(string inputData) {
+string* stringProcessing(string inputData, int& sizeStrings) {
     //Находить позиции для разделения строки по группам...
     int* arrayOfSeparatingCharacters = {}, size;
     arrayOfSeparatingCharacters = findPositionOfSeparatingCharacters(inputData, size);
 
-    char outputData[MaxSizeOfOutputStrings][MaxLengthOfOutputStrings];// = { "" }
-    int sizeStrings = 0;
-
-    cout << inputData << endl;
+    string* outputData = new string[MaxSizeOfOutputStrings];
+    sizeStrings = 0;
 
     //Для каждой позиции разделителей из массива...
     for (int i = 0, begin = 0; i < size; i++) {
         //Если разделитель является последним в тексте,
         if (i == size - 1) {
             //Скорпировать все символы до конца и завершить работу
-            cout << sizeStrings << ":\tbegin = " << begin
-                << "\tend = " << arrayOfSeparatingCharacters[i]
-                << "\tlength = " << arrayOfSeparatingCharacters[i] - begin
-                << "\tCharacter = " << arrayOfSeparatingCharacters[i] << endl;;
-            size_t length = inputData.copy(outputData[sizeStrings], arrayOfSeparatingCharacters[i] - begin, begin);
-            outputData[sizeStrings][length] = '\0';
-
-            //*(outputData[sizeStrings]) = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin, begin, begin);
+            outputData[sizeStrings] = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin + 1, begin, begin);
             sizeStrings++;
-            break;
         }
 
         //Проверить попадает ли этот разделитель по требованию диапазона, чтобы следующий разделитель не был совместно с ним находился в одном диапазоне
         if (arrayOfSeparatingCharacters[i] - begin >= 14 && arrayOfSeparatingCharacters[i] - begin <= 19 && arrayOfSeparatingCharacters[i + 1] - begin > 19) {
             //Скорпировать до данного разделителя, включительно, и вставить отдельную строку
-
-            cout << sizeStrings << ":\tbegin = " << begin
-                << "\tend = " << arrayOfSeparatingCharacters[i]
-                << "\tlength = " << arrayOfSeparatingCharacters[i] - begin + 1
-                << "\tCharacter = " << arrayOfSeparatingCharacters[i] << endl;
-
-            size_t length = inputData.copy(outputData[sizeStrings], arrayOfSeparatingCharacters[i] - begin, begin);
-            outputData[sizeStrings][length] = '\0';
-            begin = arrayOfSeparatingCharacters[i] + 1;
-
-            /**(outputData[sizeStrings]) = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin, begin, begin);*/
+            outputData[sizeStrings] = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin + 1, begin, begin);
             sizeStrings++;
 
         }
@@ -176,30 +156,13 @@ string stringProcessing(string inputData) {
             //Eсли данный разделитель не попадает в данном диапазоне, т.е меньше, чем требуется, при этом следующий находится за пределом диапазона,
             if (arrayOfSeparatingCharacters[i] - begin < 14 && arrayOfSeparatingCharacters[i + 1] - begin > 19) {
                 //То скорпировать все до максимального диапазона в отдельную строку
-
-                cout << sizeStrings << ":\tbegin = " << begin
-                    << "\tend = " << begin + 20 - 1
-                    << "\tlength = " << 20
-                    << "\tCharacter = " << arrayOfSeparatingCharacters[i] << endl;
-
-                size_t length = inputData.copy(outputData[sizeStrings], 20, begin);
-                outputData[sizeStrings][length] = '\0';
-                begin = begin + 20;
-
-                /**(outputData[sizeStrings]) = copySubstring(inputData, 20, begin, begin);*/
+                outputData[sizeStrings] = copySubstring(inputData, 20, begin, begin);
                 sizeStrings++;
             }
-
     }
-
-    cout << "\nКопирование строк:\n\n";
-    for (int i = 0; i < sizeStrings; i++) {
-        cout << outputData[i] << endl;
-    }
-
 
     //Вернуть перенесенные строки
-    return 0;//outputData;
+    return outputData;
  }
 
 
@@ -219,7 +182,7 @@ int main(const int argc, char** argv) {
     setlocale(LC_ALL, "rus");
 
     string inputData, //данные от входного файла
-        outputData; //текст для выходного файла
+        *outputData; //текст для выходного файла
 
     //Получить текст из входного файла...
     inputData = getInputData();
@@ -237,7 +200,13 @@ int main(const int argc, char** argv) {
     //}
     
  //----------------------------
-    inputData = stringProcessing(inputData);
+    int sizeStrings;
+    outputData = stringProcessing(inputData, sizeStrings);
+
+    cout << "\nКопирование строк:\n\n";
+    for (int i = 0; i < sizeStrings; i++) {
+        cout << outputData[i] << endl;
+    }
 
 //----------------------------
     /*
