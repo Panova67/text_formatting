@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 using namespace std;
-const int MaxSize = 2000;
+const int MaxSizeOfInputText = 2000;
+const int MaxSizeOfOutputStrings = 134;
+const int MaxLengthOfOutputStrings = 21;
 
 //Получить текст из входного файла
 string getInputData() {
@@ -36,8 +38,8 @@ string getInputData() {
 int checkingStringForCorrectness(string inputData) {
     int error = 1; 
     // Поддерживаемые символы: кириллица, латиница, знаки препинания, арифметические знаки, цифры
-    string correctСharacters = { "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯбвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz .,!?…«»()-:;'\"+-*=/><%[]{}≈№1234567890" };
-    //а
+    string correctСharacters = { "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz .,!?…«»()-:;'\"+-*=/><%[]{}≈№1234567890" };
+    
     //Для каждого символа строки
     for (int i = 0; inputData[i] != '\0'; i++)
     {
@@ -54,9 +56,24 @@ int checkingStringForCorrectness(string inputData) {
     return error;
 }
 
+//Проверить текст из входного файла
+int checkTextInputData(string inputData) {
+    int error = 0;
+
+    //Выдать ошибку, если размер строки не соответствует разрешенному диапазону
+    if (inputData.length() > MaxSizeOfInputText) {
+        cout << "Ошибка: Размер строки не соответствует разрешенному диапазону (2000)" << endl;
+    }
+
+    //Выдать ошибку, если содержимое строки не корректно…
+    //if(!checkingStringForCorrectness(inputData)){ return 1;}
+
+    return error;
+}
+
 //Найти позиции пробелов и знаков препинания
-int  *findPositionOfSeparatingCharacters(string inputData, int& size) {
-    int arrayOfSeparatingCharacters[MaxSize]; //массив позиций пробелов или знаков препинания
+int* findPositionOfSeparatingCharacters(string inputData, int& size) {
+    int arrayOfSeparatingCharacters[MaxSizeOfInputText]; //массив позиций пробелов или знаков препинания
     char search[] = { ".,!?…»)-:; " };
     size = 0;
 
@@ -76,56 +93,116 @@ int  *findPositionOfSeparatingCharacters(string inputData, int& size) {
     return arrayOfSeparatingCharacters;
 }
 
+//Копировать и сохранить подстроку в текст для выхода
+string copySubstring(string inputData, int length, int begin, int& nextPosition) {
+    //Скорпировать часть текста конкретной длины
+    char substring[MaxLengthOfOutputStrings];
+    size_t size = inputData.copy(substring, length, begin);
+    substring[size] = '\0';
+    nextPosition = length + begin;
+
+    //Сохранить подстроку в текст для выхода
+    string outputData = substring;
+
+    //Вернуть часть строки из текста
+    return outputData;
+}
+
 /*
-//Разделить строку с переносами
-string stringBreak(string inputData, int arrayOfSeparatingCharacters) {
+//Разбить текст на строки с переносами
+string splitText() {
     //Для каждой позиции разделителей из массива...
     {
-        //Проверить позицию пробела и знака препинания, стоит ли перед буквенным символом
-        {
-            //Копировать все символы, стоящие слева до текущей позиции, в массив для строк
-        }
-        //Является ли позиция последним символом текущей строки
-        {
-            //Копировать все символы, стоящие слева до текущей позиции, в массив для строк
-        }
+        //Если разделитель является последним в тексте,
+            //Скорпировать последную подстроку до конца в текст последней строки
+            //Иначе проверить попадает ли этот разделитель по требованию диапазона, чтобы следующий разделитель не находился совместно с ним в одном диапазоне
+                //Скорпировать подстроку до данного разделителя включительно и вставить отдельную строку
+                //Иначе если данный разделитель не попадает в данном диапазоне, т.е меньше, чем требуется, при этом следующий находится за пределом диапазона,
+                    //То скорпировать подстроку до длины максимального диапазона в отдельную строку
     }
+
     //Вернуть перенесенные строки
-    return inputData;
+    return outputData;
 }*/
+
 
 //Расставить в строке переносы
 string stringProcessing(string inputData) {
-    //Выдать ошибку, если размер строки не соответствует разрешенному диапазону
-    if (inputData.length() > MaxSize) {
-        cout << "Ошибка: Размер строки не соответствует разрешенному диапазону (2000)" << endl;
-    } 
-    
-    //Выдать ошибку, если содержимое строки не корректно…
-    //if(!checkingStringForCorrectness(inputData)){ return 1;}
-
     //Находить позиции для разделения строки по группам...
     int* arrayOfSeparatingCharacters = {}, size;
     arrayOfSeparatingCharacters = findPositionOfSeparatingCharacters(inputData, size);
 
-    //Разделить строку с переносами...
-    //inputData = stringBreak(inputData, *arrayOfSeparatingCharacters);
+    char outputData[MaxSizeOfOutputStrings][MaxLengthOfOutputStrings];// = { "" }
+    int sizeStrings = 0;
+
+    cout << inputData << endl;
+
+    //Для каждой позиции разделителей из массива...
+    for (int i = 0, begin = 0; i < size; i++) {
+        //Если разделитель является последним в тексте,
+        if (i == size - 1) {
+            //Скорпировать все символы до конца и завершить работу
+            cout << sizeStrings << ":\tbegin = " << begin
+                << "\tend = " << arrayOfSeparatingCharacters[i]
+                << "\tlength = " << arrayOfSeparatingCharacters[i] - begin
+                << "\tCharacter = " << arrayOfSeparatingCharacters[i] << endl;;
+            size_t length = inputData.copy(outputData[sizeStrings], arrayOfSeparatingCharacters[i] - begin, begin);
+            outputData[sizeStrings][length] = '\0';
+
+            //*(outputData[sizeStrings]) = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin, begin, begin);
+            sizeStrings++;
+            break;
+        }
+
+        //Проверить попадает ли этот разделитель по требованию диапазона, чтобы следующий разделитель не был совместно с ним находился в одном диапазоне
+        if (arrayOfSeparatingCharacters[i] - begin >= 14 && arrayOfSeparatingCharacters[i] - begin <= 19 && arrayOfSeparatingCharacters[i + 1] - begin > 19) {
+            //Скорпировать до данного разделителя, включительно, и вставить отдельную строку
+
+            cout << sizeStrings << ":\tbegin = " << begin
+                << "\tend = " << arrayOfSeparatingCharacters[i]
+                << "\tlength = " << arrayOfSeparatingCharacters[i] - begin + 1
+                << "\tCharacter = " << arrayOfSeparatingCharacters[i] << endl;
+
+            size_t length = inputData.copy(outputData[sizeStrings], arrayOfSeparatingCharacters[i] - begin, begin);
+            outputData[sizeStrings][length] = '\0';
+            begin = arrayOfSeparatingCharacters[i] + 1;
+
+            /**(outputData[sizeStrings]) = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin, begin, begin);*/
+            sizeStrings++;
+
+        }
+        //Иначе 
+        else
+            //Eсли данный разделитель не попадает в данном диапазоне, т.е меньше, чем требуется, при этом следующий находится за пределом диапазона,
+            if (arrayOfSeparatingCharacters[i] - begin < 14 && arrayOfSeparatingCharacters[i + 1] - begin > 19) {
+                //То скорпировать все до максимального диапазона в отдельную строку
+
+                cout << sizeStrings << ":\tbegin = " << begin
+                    << "\tend = " << begin + 20 - 1
+                    << "\tlength = " << 20
+                    << "\tCharacter = " << arrayOfSeparatingCharacters[i] << endl;
+
+                size_t length = inputData.copy(outputData[sizeStrings], 20, begin);
+                outputData[sizeStrings][length] = '\0';
+                begin = begin + 20;
+
+                /**(outputData[sizeStrings]) = copySubstring(inputData, 20, begin, begin);*/
+                sizeStrings++;
+            }
+
+    }
+
+    cout << "\nКопирование строк:\n\n";
+    for (int i = 0; i < sizeStrings; i++) {
+        cout << outputData[i] << endl;
+    }
+
 
     //Вернуть перенесенные строки
-    return inputData;
+    return 0;//outputData;
  }
 
-/*
-//Соединить перенесенные строки на массив строк по длине 15-20 символов
-string groupStrings(string inputData) {
-    //Создать результирующий массив строк
-    //Для каждой строки и её следующие строки, длина которых удовлетворяет лимиту и которых n - следующая строка не равна лимиту
-    {
-        //Копировать из группы - строк той количество, которое при сложении символов строк удовлетворяет лимиту, в результирующий массив
-    }
-    //Добавить группу строк в результирующий массив, если она находится в конце строки и ее длина меньше лимита
-    //Вернуть результирующий массив
-}*/
+
 
 /*
 //Записать массив строк в выходной файл
@@ -151,20 +228,19 @@ int main(const int argc, char** argv) {
     //Выдать ошибку, если входной файл не указан в аргументах командной строки
     //Выдать ошибку, если входной файл невозможно открыть
     
-    //Расставить в строке переносы...
-    inputData = stringProcessing(inputData);
-
+    //checkTextInputData(inputData);
+    
     //Если есть ошибка
     //{
         //Распечатать её в консоль ошибок
         //Завершить работу программы
     //}
+    
  //----------------------------
-    
+    inputData = stringProcessing(inputData);
+
+//----------------------------
     /*
-    //Соединить перенесенные строки на массив строк по длине 15 - 20 символов...
-    outputData = groupStrings(inputData);
-    
     //Записать массив строк в выходной файл...
     writeOutputData(outputData);
     */
