@@ -214,16 +214,16 @@ string* textProcessing(string inputData, int& sizeStrings) {
     return outputData;
 }
 
-/*
 //Записать массив строк в выходной файл
-int writeOutputData(string outputData) {
+int writeOutputData(string* outputData, int sizeStrings) {
     //Вывести результирующий текст в консоль
-    cout << outputData << endl;
+    for (int i = 0; i < sizeStrings; i++) {
+        cout << "|" << outputData[i] << "|\n";
+    }
 
     //Завершить работу программы
     return 0;
-}*/
-
+}
 
 int main(const int argc, char** argv) {
     setlocale(LC_ALL, "rus");
@@ -252,16 +252,8 @@ int main(const int argc, char** argv) {
     //Обрабатывать текст с переносами по ширине...
     outputData = textProcessing(inputData, sizeStrings);
 
-    cout << "\nФорматирование строк:\n\n";
-    for (int i = 0; i < sizeStrings; i++) {
-        cout << "|" << outputData[i] << "|\n";
-    }
-
-//----------------------------
-    /*
     //Записать массив строк в выходной файл...
-    writeOutputData(outputData);
-    */
+    writeOutputData(outputData, sizeStrings);
 
     return 0;
 }
