@@ -8,68 +8,72 @@ const int MaxLengthOfOutputStrings = 21;
 
 //Получить текст из входного файла
 string getInputData() {
-    string textFile = "input.txt";
-    ifstream file;
-    string inputData; //Данные от входного файла
+    string textFile = "input.txt"; //Название текстового файла
+    ifstream file;      //Файл, которого мы будем открывать
+    string inputData;   //Данные от входного файла
 
-    //Получить текст из файла
-    file.open(textFile); //Открываем файл
-    if (!file.is_open()) { //Если введено не корректное имя файла
-        cout << "Ошибка: Файл не может быть открыт!" << endl;
+    //Открываем файл
+    file.open(textFile);
+
+    //Выдать код ошибки, если введено не корректное имя файла
+    if (!file.is_open()) {
+        throw 1;
     }
+    //Иначе проверить есть ли в файле текст
     else {
-        if (textFile.empty()) { //Проверить есть ли в файле текст
-            cout << "Ошибка: В файле нет текста" << endl;
+        //Выдать код ошибки, если в файле нет текста
+        if (textFile.empty()) {
+            throw 2;
         }
+        //Иначе получить текст из файла
         else {
             while (!file.eof()) {
                 getline(file, inputData);
             }
         }
     }
-    file.close(); //Закрываем файл
+
+    //Закрываем файл
+    file.close();
 
     //Вернуть текст, полученный из файла
     return inputData;
 }
 
+
 //Проверить содержимое строки на корректность
 int checkingStringForCorrectness(string inputData) {
-    int IncorrectString = 1;
+    int incorrectСharacter = -1; //Позиция некорректного символа
 
     //Поддерживаемые символы: кириллица, латиница, знаки препинания, арифметические знаки, цифры
     string correctСharacters = { "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюяABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz .,!?…«»()-:;'\"+-*=/><%[]{}≈№1234567890" };
 
-    //Для каждого символа строки
+    //Для каждого символа строки проверить, является ли тот кириллицей, латиницей, цифрой, знаком препинания и арифметическим знаком
     for (int i = 0; inputData[i] != '\0'; i++)
     {
-        //Вернуть код ошибки типа "Некорректный символ", если найден символ, который
-        //не является кириллицей, латиницей, цифрой, знаком препинания и арифметическим знаком
+        //Если найден некорректный символ, сохранить его позицию и прервать работу
         if (correctСharacters.find(inputData[i]) == string::npos) {
-            cout << "Ошибка: Некорректный символ " << inputData[i] << endl;
-            IncorrectString = 0;
+            incorrectСharacter = i;
             break;
         }
     }
 
-    //Вернуть код без ошибки
-    return IncorrectString;
+    //Вернуть позицию некорректного символа
+    return incorrectСharacter;
 }
+
 
 //Проверить текст из входного файла на наличие ошибок
-int checkTextInputData(string inputData) {
-    int error = 0;
+int checkTextInputData(string inputData, int& incorrectСharacter) {
+    //Выдать код ошибки, если размер текста не соответствует разрешенному диапазону
+    if (inputData.length() > MaxSizeOfInputText) { throw 3; }
 
-    //Выдать ошибку, если размер строки не соответствует разрешенному диапазону
-    if (inputData.length() > MaxSizeOfInputText) {
-        cout << "Ошибка: Размер строки не соответствует разрешенному диапазону (2000)" << endl;
-    }
+    //Выдать код ошибки, если содержимое текста не корректно...
+    incorrectСharacter = checkingStringForCorrectness(inputData);
+    if (incorrectСharacter != -1) { throw 4; }
 
-    //Выдать ошибку, если содержимое строки не корректно...
-    //if(!checkingStringForCorrectness(inputData)){ return 1;}
-
-    return error;
 }
+
 
 //Найти позиции пробелов и знаков препинания
 int* findPositionOfSeparatingCharacters(string inputData, char* search, int& size) {
@@ -92,6 +96,7 @@ int* findPositionOfSeparatingCharacters(string inputData, char* search, int& siz
     return arrayOfSeparatingCharacters;
 }
 
+
 //Копировать и сохранить подстроку в текст для выхода
 string copySubstring(string inputData, int length, int begin, int& nextPosition) {
     //Скорпировать часть текста конкретной длины
@@ -107,6 +112,7 @@ string copySubstring(string inputData, int length, int begin, int& nextPosition)
     //Вернуть часть строки из текста
     return outputData;
 }
+
 
 //Разбить текст на строки с переносами
 string* splitText(string inputData, int& sizeStrings) {
@@ -133,7 +139,6 @@ string* splitText(string inputData, int& sizeStrings) {
                 //Скорпировать подстроку до данного разделителя включительно и вставить отдельную строку...
                 outputData[sizeStrings] = copySubstring(inputData, arrayOfSeparatingCharacters[i] - begin + 1, begin, begin);
                 sizeStrings++;
-
             }
             else
                 //Иначе если данный разделитель не попадает в данном диапазоне, т.е меньше, чем требуется, при этом следующий находится за пределом диапазона,
@@ -148,10 +153,11 @@ string* splitText(string inputData, int& sizeStrings) {
     return outputData;
 }
 
+
 //Сортировать по ширине
 string sortingByWidth(string String, int length, int* positionsOfSpaces, int numberOfSpaces) {
     string newString,	//Отформатированная по ширине строка
-        spaces, //Пробелы
+        spaces,         //Пробелы
         substringBegin, //Правая часть строки
         substringEnd;	//Левая часть строки
 
@@ -164,13 +170,16 @@ string sortingByWidth(string String, int length, int* positionsOfSpaces, int num
         substringBegin = copySubstring(String, positionsOfSpaces[i] + 1, 0, next);
         substringEnd = copySubstring(String, length - next, next, next);
 
-        //Ставим между ними пробел
-        spaces = spaces + ' '; length++;
+        //Ставим между ними дополнительный пробел, увеличивая длину
+        if (i == 0) { spaces = spaces + ' '; }
+        length++;
         newString = substringBegin + spaces + substringEnd;
     }
 
+    //Вернуть форматированную по ширине строку
     return newString;
 }
+
 
 //Обрабатывать текст с переносами по ширине
 string* textProcessing(string inputData, int& sizeStrings) {
@@ -211,8 +220,10 @@ string* textProcessing(string inputData, int& sizeStrings) {
         }
     }
 
+    //Вернуть отформатированные по ширине строки с перносами
     return outputData;
 }
+
 
 //Записать массив строк в выходной файл
 int writeOutputData(string* outputData, int sizeStrings) {
@@ -225,30 +236,39 @@ int writeOutputData(string* outputData, int sizeStrings) {
     return 0;
 }
 
-int main(const int argc, char** argv) {
-    setlocale(LC_ALL, "rus");
 
-    string inputData, //Данные от входного файла
-        *outputData; //Текст для выходного файла
-    int sizeStrings; //Размер строк текста с переносами
-    
-    //Получить текст из входного файла...
-    inputData = getInputData();
-    
-//----------------------------    
-    //Выдать ошибку, если входной файл не указан в аргументах командной строки
-    //Выдать ошибку, если входной файл невозможно открыть
-    
-    //Проверить текст из входного файла на наличие ошибок...
-    //checkTextInputData(inputData);
-    
-    //Если есть ошибка
-    //{
-        //Распечатать её в консоль ошибок
-        //Завершить работу программы
-    //}
-    
- //----------------------------
+int main(const int argc, char** argv) {
+    setlocale(LC_ALL, "rus"); //Русский язык в консоль
+
+    string inputData,   //Данные от входного файла
+        * outputData;   //Текст для выходного файла
+    int sizeStrings;    //Размер строк текста с переносами
+    int incorrectСharacter; //Позиция некорректного символа
+
+    try {
+        //Получить текст из входного файла...
+        inputData = getInputData();
+
+        //Проверить текст из входного файла на наличие ошибок...
+        checkTextInputData(inputData, incorrectСharacter);
+    }
+    //Если есть ошибка, распечатать её в консоль ошибок и завершить работу программы
+    catch (int error) {
+        //Выдать ошибку, если входной файл невозможно открыть
+        if (error == 1) { cout << "Ошибка: Файл не может быть открыт!" << endl; }
+
+        //Выдать ошибку, если в входном тексте нет текста
+        if (error == 2) { cout << "Ошибка: В файле нет текста" << endl; }
+
+        //Выдать ошибку, если размер текста не соответствует разрешенному диапазону
+        if (error == 3) { cout << "Ошибка: Размер строки не соответствует разрешенному диапазону (2000)" << endl; }
+
+        //Выдать ошибку, если содержимое текста не корректно
+        if (error == 4) { cout << "Ошибка: Некорректный символ \"" << inputData[incorrectСharacter] << "\"\n"; }
+
+        return 0;
+    }
+
     //Обрабатывать текст с переносами по ширине...
     outputData = textProcessing(inputData, sizeStrings);
 
