@@ -141,6 +141,9 @@
   <ItemGroup>
     <ClCompile Include="text_formatting.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="text_formatting.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

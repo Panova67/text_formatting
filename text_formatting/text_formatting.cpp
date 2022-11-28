@@ -1,10 +1,8 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
-using namespace std;
-const int MaxSizeOfInputText = 2000;
-const int MaxSizeOfOutputStrings = 134;
-const int MaxLengthOfOutputStrings = 21;
+#include "text_formatting.h"
+
 
 //Получить текст из входного файла
 string getInputData() {
@@ -242,8 +240,8 @@ int main(const int argc, char** argv) {
 
     string inputData,   //Данные от входного файла
         * outputData;   //Текст для выходного файла
-    int sizeStrings;    //Размер строк текста с переносами
-    int incorrectСharacter; //Позиция некорректного символа
+    int sizeStrings,    //Размер строк текста с переносами
+        incorrectСharacter; //Позиция некорректного символа
 
     try {
         //Получить текст из входного файла...
