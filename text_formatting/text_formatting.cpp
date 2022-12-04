@@ -154,23 +154,29 @@ string* splitText(string inputData, int& sizeStrings) {
 //Сортировать по ширине
 string sortingByWidth(string String, int lengthString, int* positionsOfSpaces, int numberOfSpaces) {
     string newString,	//Отформатированная по ширине строка
-        spaces,         //Пробелы
         substringBegin, //Правая часть строки
         substringEnd;	//Левая часть строки
 
+    int next, spaces = 0; //Следующая позиция и количество увеличенных пробелов
+    newString = copySubstring(String, lengthString, 0, next);
+
     //Пока длина данной строки не достигнет до максимального диапазона
-    for (int i = 0, next; lengthString < MaxLengthOfOutputStrings - 1; i++) {
+    for (int i = 0, k = 0; lengthString < MaxLengthOfOutputStrings - 1; i++) {
         //Если позиции пробелов закончены, то возвращаемся к первому позиции
-        if (i > numberOfSpaces - 1) { i = 0; }
+        if (i >= numberOfSpaces) { 
+            i = 0; 
+            k++;
+        }
 
         //Сохраняем первую и вторую часть строки, где их отделяет пробел...
-        substringBegin = copySubstring(String, positionsOfSpaces[i] + 1, 0, next);
-        substringEnd = copySubstring(String, lengthString - next, next, next);
+        int n = spaces - (k * numberOfSpaces) + i;
+        substringBegin = copySubstring(newString, positionsOfSpaces[i] + n, 0, next);
+        substringEnd = copySubstring(newString, lengthString - next, next, next);
 
         //Ставим между ними дополнительный пробел, увеличивая длину
-        if (i == 0) { spaces = spaces + ' '; }
-        lengthString++;
-        newString = substringBegin + spaces + substringEnd;
+        newString = substringBegin + ' ' + substringEnd;
+        lengthString++; 
+        spaces++;
     }
 
     //Вернуть форматированную по ширине строку
@@ -203,7 +209,7 @@ string* textProcessing(string inputData, int& sizeStrings) {
         int lengthData = outputData[i].length(); //Длина данной строки
 
         //Если последний символ является пробелом,
-        if (outputData[i][arrayOfSpaces[sizeArray - 1]] == ' ') {
+        if (outputData[i][lengthData - 1] == ' ' && arrayOfSpaces[sizeArray - 1] == lengthData - 1) {
             //Удалить эту позицию из массива, уменьшив его размер, и сократить длину строки
             arrayOfSpaces[sizeArray - 1] = '\0';
             sizeArray--;
