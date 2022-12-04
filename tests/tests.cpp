@@ -22,8 +22,9 @@ namespace tests
 
 		TEST_METHOD(TestMethod2)
 		{
+			string text;
 			try {
-				string text = getInputData("test1.txt");
+				text = getInputData("test1.txt");
 			}
 			catch (int error) {
 				Assert::AreEqual(2, error);
@@ -38,17 +39,6 @@ namespace tests
 			}
 			catch (int error) {}
 			
-			Assert::AreEqual((string)"Политех основан в 1930 году.", text);
-		}
-
-		TEST_METHOD(TestMethod4)
-		{
-			string text;
-			try {
-				text = getInputData("test3.txt");
-			}
-			catch (int error) {}
-
 			Assert::AreEqual((string)"VSTU_was founded in 1930", text);
 		}
 	};
@@ -125,9 +115,8 @@ namespace tests
 
 		TEST_METHOD(TestMethod1)
 		{
+			int* arr = {}, size;
 			char search[] = { " .,!?…»)-—:;+-*=/><%]}" };
-			int size;
-			int* arr = {};
 			arr = findPositionOfSeparatingCharacters("It's VSTU", search, size);
 
 			int exc_arr[] = { 4, 8 };
@@ -135,16 +124,13 @@ namespace tests
 			for (int i = 0; i < size; i++) {
 				Assert::AreEqual(exc_arr[i], arr[i]);
 			}
-			Assert::AreEqual(exc_arr[0], arr[0]);
-			Assert::AreEqual(exc_arr[1], arr[1]);
-			Assert::AreEqual(2, size);
 		}
 
 		TEST_METHOD(TestMethod2)
 		{
+			int* arr = {}, size;
 			char search[] = { " .,!?…»)-—:;+-*=/><%]}" };
-			int size;
-			int* arr = findPositionOfSeparatingCharacters("hello", search, size);
+			arr = findPositionOfSeparatingCharacters("hello", search, size);
 
 			int exc_arr[] = { 4 };
 
@@ -155,14 +141,27 @@ namespace tests
 
 		TEST_METHOD(TestMethod3)
 		{
+			int* arr = {}, size;
 			char search[] = { " .,!?…»)-—:;+-*=/><%]}" };
-			int size;
-			int* arr = findPositionOfSeparatingCharacters("!hello", search, size);
+			arr = findPositionOfSeparatingCharacters("!hello", search, size);
 
 			int exc_arr[] = { 0, 5 };
 
 			for (int i = 0; i < size; i++) {
 				Assert::AreEqual(exc_arr[i], arr[i]);
+			}
+		}
+
+		TEST_METHOD(TestMethod4)
+		{
+			int* arr = {}, size;
+			char search[] = { " .,!?…»)-—:;+-*=/><%]}" };
+			arr = findPositionOfSeparatingCharacters("VSTU was founded in 1930", search, size);
+
+			int exc_arr[] = {4, 8, 16, 19};
+
+			for (int i = 0; i < size; i++) {
+				Assert::AreEqual(exc_arr[i], *(arr+i));
 			}
 		}
 	};
@@ -244,7 +243,7 @@ namespace tests
 		{
 			int arrayOfSpaces[] = { 2, 8 };
 			string strings = sortingByWidth("0A human thought ", 16, arrayOfSpaces, 2);
-			Assert::AreEqual((string)"0A human   thought ", strings);
+			Assert::AreEqual((string)"0A   human   thought", strings);
 		}
 
 		TEST_METHOD(TestMethod3)
@@ -292,8 +291,8 @@ namespace tests
 		{
 			int sizeStrings;
 			string* strings = textProcessing("0A human thought 1fixed on some 2material medium; 3in general, a 4coherent and comple5te sequence of 6symbols.", sizeStrings);
-			string exp_strings[7] = { "0A human   thought ", "1fixed on    some ", "2material    medium; ",
-				"3in general,    a " , "4coherent and comple" , "5te  sequence    of " , "6symbols." }; 
+			string exp_strings[7] = { "0A   human   thought", "1fixed    o n   some", "2material    medium;",
+				"3in    general ,   a" , "4coherent and comple" , "5te    sequence   of" , "6symbols." }; 
 			
 			for (int i = 0; i < sizeStrings; i++) {
 				Assert::AreEqual(exp_strings[i], strings[i]);
