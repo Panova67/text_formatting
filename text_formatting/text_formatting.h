@@ -11,9 +11,10 @@ using namespace std;
 
 
 /*	Получить текст из входного файла
+*	\param[in] textFile - название текстового файла
 *	\return текст, полученный из файла
 */
-string getInputData();
+string getInputData(string textFile);
 
 
 /*	Проверить содержимое строки на корректность
@@ -41,12 +42,12 @@ int* findPositionOfSeparatingCharacters(string inputData, char* search, int& siz
 
 /*  Копировать и сохранить подстроку в текст для выхода
 *   \param[in] inputData - текст входного файла
-*   \param[in] length - длина подстроки, часть текста которую собираемся скорпировать
-*   \param[in] begin - начальная позиция подстроки для копирования
+*   \param[in] lengthSubstring - длина подстроки, часть текста которую собираемся скопировать
+*   \param[in] beginPosition - начальная позиция подстроки для копирования
 *   \param[out] nextPosition - следующая начальная позиция подстроки
 *   \return часть строки из текста
 */
-string copySubstring(string inputData, int length, int begin, int& nextPosition);
+string copySubstring(string inputData, int lengthSubstring, int beginPosition, int& nextPosition);
 
 
 /*  Разбить текст на строки с переносами
@@ -59,24 +60,24 @@ string* splitText(string inputData, int& sizeStrings);
 
 /*  Сортировать по ширине
 *   \param[in] String - строка, которую собираемся форматировать по ширине максимального диапазона
-*   \param[in] length - длина данной строки
+*   \param[in] lengthString - длина данной строки
 *   \param[in] positionsOfSpaces - позиция пробелов данной строки
 *   \param[in] numberOfSpaces - количество пробелов в данной строке
 *   \return форматированная по ширине строка
 */
-string sortingByWidth(string String, int length, int* positionsOfSpaces, int numberOfSpaces);
+string sortingByWidth(string String, int lengthString, int* positionsOfSpaces, int numberOfSpaces);
 
 
 /*  Обрабатывать текст с переносами по ширине
 *   \param[in] inputData - текст входного файла
 *   \param[out] sizeStrings - размер строк для выхода
-*   \return отформатированные по ширине строки с перносами
+*   \return отформатированные по ширине строки с переносами
 */
 string* textProcessing(string inputData, int& sizeStrings);
 
 
 /*  Записать массив строк в выходной файл
-*   \param[in] outputData - отформатированные по ширине строки с перносами
+*   \param[in] outputData - текст, отформатированный по ширине, с переносами
 *   \param[in] sizeStrings - размер этих строк для выхода
 *   \return завершение работы программы
 */
